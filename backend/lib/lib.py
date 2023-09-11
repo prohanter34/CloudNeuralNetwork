@@ -1,4 +1,5 @@
-
+import csv
+import numpy as np
 
 class Request:
     def __init__(self, structure, model, dataset, train):
@@ -9,19 +10,45 @@ class Request:
 
 
 class Dataset:
-    def __init__(self, learning_data_input: [], input_type: str,
-                 depth_input_data: int, input_data_scale: int, learning_data_output: []):
-        # array??? / датасет на вход
-        self.learning_data_input = learning_data_input
+    def __init__(self, learning_data: [], input_type: str,
+                 depth_input_data: int):
+        # array??? / датасет и вход и выход
+        self.learning_data = learning_data
         # String / тип входных данных
         self.input_type = input_type
         # int глубина входных данных / (255 для RGB картинки)
         self.depth_input_data = depth_input_data
-        # int / размер входных данных (кол-во пикселей одной картинки)
-        self.input_data_scale = input_data_scale
-        # array??? / датасет на выход
-        self.learning_data_output = learning_data_output
 
+        # int / размер входных данных (кол-во пикселей одной картинки)
+        self.input_data_scale = None
+        # np.array
+        self.learning_data_output = None
+        # np.array
+        self.learning_data_input = None
+    def prepare_data(self):
+        # чтение csv
+        datafile = list(csv.reader(self.learning_data, delimiter=','))
+        # удаление метаданных
+        datafile.pop(0)
+        x_train = []
+        y_train = []
+        # разделение на входную и выходную
+        for i in datafile:
+            e = list(i)
+            x_train.append(e[1:])
+            y_train.append(e[:1])
+
+        x_train = np.array(x_train, dtype="int")
+        y_train = np.array(y_train, dtype="int")
+        # размерность входных данных
+        scale = len(x_train[0])
+
+        # нормализация
+        # x_train / self.depth_input_data
+
+        self.input_data_scale = scale
+        self.learning_data_input = x_train
+        self.learning_data_output = y_train
 
 class Structure:
     def __init__(self, hidden_layer_count: int, neuron_count: [int],

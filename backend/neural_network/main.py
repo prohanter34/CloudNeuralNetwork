@@ -1,31 +1,29 @@
 from tensorflow import keras
 from keras.layers import Dense, Flatten
-from keras.datasets import mnist
+import numpy as np
+import csv
 from lib.lib import Request, Model, Structure, Dataset, Train
 
-
-dataset = mnist.load_data()
-(x_train, y_train), (x_test, y_test) = dataset
-
-
 ############## backend test
+
+# симуляция приходящих данных
+file = open("../mnist_train.csv", "r")
+
 model = Model(opt_fn="adam", loss_fn="categorical_crossentropy")
-structure = Structure(neuron_count=[128, 200, 10], hidden_layer_count=2,
+structure = Structure(neuron_count=[128, 200, 27], hidden_layer_count=2,
                       act_fn=['relu', 'relu', 'softmax'])
-dataset = Dataset(learning_data_input=x_train, input_type="mnist", depth_input_data=255,
-                  input_data_scale=28, learning_data_output=y_train)
+dataset = Dataset(learning_data=file, input_type="csv", depth_input_data=255)
 train = Train(epochs=10, validation_split=0.1, batch_size=32)
 
 request = Request(dataset=dataset, model=model, structure=structure, train=train)
 
 ####################
 
-print(x_train[0], y_train[0])
+
 class NeuralNetwork(Request):
     def create_model(self):
         model = keras.models.Sequential()
-        # model.add(Dense(units=784, input_shape=(28, 28, 1)))
-        model.add(Flatten(input_shape=(28, 28, )))
+        model.add(Flatten(input_shape=(self.dataset.input_data_scale, )))
         count: int = self.structure.hidden_layer_count
         for i in range(count):
             model.add(Dense(units=self.structure.neuron_count[i], activation=self.structure.act_fn[i]))
@@ -35,8 +33,10 @@ class NeuralNetwork(Request):
 
 
     def prepare_dataset(self):
+        self.dataset.prepare_data()
         self.dataset.learning_data_input = self.dataset.learning_data_input / self.dataset.depth_input_data
-        self.dataset.learning_data_output = keras.utils.to_categorical(self.dataset.learning_data_output, 10)
+        self.dataset.learning_data_output = keras.utils.to_categorical(self.dataset.learning_data_output, self.structure
+                                                                       .neuron_count[-1])
 
     def train_model(self, model):
         model.fit(x=self.dataset.learning_data_input, y=self.dataset.learning_data_output,
@@ -45,11 +45,10 @@ class NeuralNetwork(Request):
         return model
 
 
+
 neuralnetwork = NeuralNetwork(model=request.model, structure=request.structure,
                               train=request.train, dataset=request.dataset)
 
-model = neuralnetwork.create_model()
 neuralnetwork.prepare_dataset()
+model = neuralnetwork.create_model()
 model = neuralnetwork.train_model(model)
-
-
