@@ -16,27 +16,44 @@ database = Database()
 
 @app.post("/auth/registration")
 def registration(user: User) -> object:
-    # results = database.put_user(user.login, user.password, user.email)
-    # todo
-
+    results = database.put_user(user.login, user.password, user.email)
     response = {
-        "recultCode": 0,
+        "resultCode": 0,
         "email": user.email,
         "login": user.login
     }
-    return response
+    if results[0] == "0":
+        return response
+    else:
+        response["resultCode"] = 1
+        response["email"] = ""
+        response["login"] = ""
+        return response
 
 
-@app.post('/{}/'.format(path) + "auth/login")
+@app.post("/auth/login")
 def login(user: User) -> object:
     results = database.take_user(user.login)
 
     response = {
-        "resultCode": 0,
-        "email": results[2],
-        "login": results[0]
+        "resultCode": 1,
+        "email": "",
+        "login": ""
     }
-    return response
+
+    if results[0] == "1":
+        return response
+    elif results[0][2] == user.password:
+        response = {
+            "resultCode": 0,
+            "email": results[0][3],
+            "login": results[0][1]
+        }
+        return response
+    else:
+        response["resultCode"] = 2
+        return response
+
 
 
 origins = [

@@ -17,15 +17,16 @@ class Database:
 
     def take_user(self, login):
         try:
-            self.cursor.execute(F"SELECT * FROM users WHERE login={login};")
+            self.cursor.execute(F"SELECT * FROM users WHERE login='{login}';")
             return list(self.cursor.fetchall())
         except:
-            return list("0")
+            return list("1")
 
     def put_user(self, login, password, email):
         try:
-            self.cursor.execute(f"INSERT INTO users(login, password, email) VALUES ({login}, {password}, {email})")
-            return list(self.cursor.fetchall())
-        except:
+            self.cursor.execute(f"INSERT INTO users(login, password, email) VALUES ('{login}', '{password}', '{email}');")
+            self.conn.commit()
             return list("0")
+        except:
+            return list("1")
 
