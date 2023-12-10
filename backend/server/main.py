@@ -100,7 +100,7 @@ def user_data(data: Data, dataset: UploadFile) -> object:
 
     contents = dataset.file.read()
     file_name = dataset.filename
-    file_path = "./" + file_name
+    file_path = "./" + "".join(str(uuid.uuid4()).split("-")) + file_name
     with open(file_path, "wb") as f:
         f.write(contents)
     dataset.file.close()
@@ -129,7 +129,7 @@ def user_data(data: Data, dataset: UploadFile) -> object:
 
     model = neuralnetwork.create_model()
     model = neuralnetwork.train_model(model)
-    neuralnetwork_file_path = "../neural_network/" + "".join(str(uuid.uuid4()).split("-")) + ".keras"
+    neuralnetwork_file_path = "../final/" + "".join(str(uuid.uuid4()).split("-")) + ".keras"
     neuralnetwork.save_model(model, neuralnetwork_file_path)
 
     response = {"neuralnetwork_file_path": neuralnetwork_file_path,
