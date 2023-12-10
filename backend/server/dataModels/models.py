@@ -14,6 +14,7 @@ class Data(BaseModel):
     hidden_layer_count: int  # 2
     act_fn: list[str]  # ['relu', 'relu', 'softmax']
 
+    dataset_filename: str # имя файла с расширением
     depth_input_data: int # 255
 
     epochs: int # 10

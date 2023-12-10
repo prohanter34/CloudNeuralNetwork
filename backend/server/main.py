@@ -85,8 +85,22 @@ def login(user: User) -> object:
 #     """
 #     return HTMLResponse(content=html_content, status_code=200)
 
+@app.post("/dataset")
+def user_data(dataset: UploadFile) -> object:
+    contents = dataset.file.read()
+    file_name = "".join(str(uuid.uuid4()).split("-")) + dataset.filename
+    file_path = "../datasets/" + file_name
+    with open(file_path, "wb") as f:
+        f.write(contents)
+    dataset.file.close()
+
+    response = {"dataset_file_name": file_name,
+                "resultCode": 200}
+    return response
+
+
 @app.post("/data")
-def user_data(data: Data, dataset: UploadFile) -> object:
+def user_data(data: Data) -> object:
 # def user_data(opt_fn: str = Form(...),
 #               loss_fn: str = Form(...),
 #               neuron_count: str = Form(...),
@@ -98,13 +112,6 @@ def user_data(data: Data, dataset: UploadFile) -> object:
 #               batch_size: str = Form(...),
 #               dataset: UploadFile = File(...)) -> object:
 
-    contents = dataset.file.read()
-    file_name = dataset.filename
-    file_path = "./" + "".join(str(uuid.uuid4()).split("-")) + file_name
-    with open(file_path, "wb") as f:
-        f.write(contents)
-    dataset.file.close()
-
     # data = Data(opt_fn=opt_fn,loss_fn=loss_fn,neuron_count=list(map(int, neuron_count.split(","))),
     #             hidden_layer_count=hidden_layer_count,act_fn=act_fn.split(","),
     #             depth_input_data=depth_input_data,epochs=epochs,
@@ -114,9 +121,10 @@ def user_data(data: Data, dataset: UploadFile) -> object:
     structure = Structure(neuron_count=data.neuron_count,
                           hidden_layer_count=data.hidden_layer_count,
                           act_fn=data.act_fn)
+    file_path = "../datasets/" + data.dataset_filename
     file = open(file_path, "r")
     dataset_model = Dataset(learning_data=file,
-                            input_type=dataset.filename.split(".")[-1],
+                            input_type=data.dataset_filename.split(".")[-1],
                             depth_input_data=data.depth_input_data)
     train = Train(epochs=data.epochs, validation_split=data.validation_split,
                   batch_size=data.batch_size)
