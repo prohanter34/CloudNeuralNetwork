@@ -129,16 +129,17 @@ def user_data(data: Data, dataset: UploadFile) -> object:
 
     model = neuralnetwork.create_model()
     model = neuralnetwork.train_model(model)
-    neuralnetwork_file_path = "../final/" + "".join(str(uuid.uuid4()).split("-")) + ".keras"
+    neuralnetwork_file_name = "".join(str(uuid.uuid4()).split("-"))
+    neuralnetwork_file_path = "../final/" + neuralnetwork_file_name + ".keras"
     neuralnetwork.save_model(model, neuralnetwork_file_path)
 
-    response = {"neuralnetwork_file_path": neuralnetwork_file_path,
+    response = {"neuralnetwork_file_name": neuralnetwork_file_name,
                 "resultCode": 200}
     return response
 
 @app.get("/final")
 def download_file(final: Final) -> object:
-    return FileResponse(path=final.neuralnetwork_file_path)
+    return FileResponse(path=("../final/" + final.neuralnetwork_file_name + ".keras"))
 
 
 origins = [

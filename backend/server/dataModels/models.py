@@ -21,4 +21,4 @@ class Data(BaseModel):
     batch_size: int # 32
 
 class Final(BaseModel):
-    neuralnetwork_file_path: str # путь к файлу готовой нейронки
+    neuralnetwork_file_name: str # путь к файлу готовой нейронки
