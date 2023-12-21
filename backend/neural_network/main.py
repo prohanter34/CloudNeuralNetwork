@@ -1,6 +1,6 @@
 from tensorflow import keras
 from keras.layers import Dense, Flatten
-from backend.lib.lib import Request
+from lib.lib import Request
 
 
 class NeuralNetwork(Request):
