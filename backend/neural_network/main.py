@@ -2,7 +2,7 @@ from tensorflow import keras
 from keras.layers import Dense, Flatten
 import numpy as np
 import csv
-from backend.lib.lib import Request, Model, Structure, Dataset, Train
+from lib.lib import Request, Model, Structure, Dataset, Train
 
 ############## backend test
 
