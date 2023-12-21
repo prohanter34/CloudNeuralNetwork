@@ -11,7 +11,7 @@ class Data(BaseModel):
     loss_fn: str  # "categorical_crossentropy"
 
     neuron_count: list[int] # [128, 200, 27]
-    hidden_layer_count: int  # 2
+    hidden_layer_count: int  # 3
     act_fn: list[str]  # ['relu', 'relu', 'softmax']
 
     dataset_filename: str # имя файла с расширением
