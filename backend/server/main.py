@@ -20,7 +20,7 @@ database = Database()
 
 
 @app.post("/auth/registration")
-def registration(user: User) -> object:
+def registration(user: User):
     results = database.put_user(user.login, user.password, user.email)
     response = {
         "resultCode": 0,
@@ -37,7 +37,7 @@ def registration(user: User) -> object:
 
 
 @app.post("/auth/login")
-def login(user: User) -> object:
+def login(user: User):
     results = database.take_user(user.login)
 
     response = {
@@ -60,7 +60,7 @@ def login(user: User) -> object:
         return response
 
 @app.post("/dataset")
-def user_data(dataset: UploadFile) -> object:
+def user_data(dataset: UploadFile):
     contents = dataset.file.read()
     file_name = "".join(str(uuid.uuid4()).split("-")) + dataset.filename
     file_path = "../datasets/" + file_name
@@ -73,7 +73,7 @@ def user_data(dataset: UploadFile) -> object:
 
 
 @app.post("/data")
-def user_data(data: Data) -> object:
+def user_data(data: Data):
     model = Model(opt_fn=data.opt_fn, loss_fn=data.loss_fn)
     structure = Structure(neuron_count=data.neuron_count,
                           hidden_layer_count=data.hidden_layer_count,
@@ -102,7 +102,7 @@ def user_data(data: Data) -> object:
     return response
 
 @app.post("/final")
-def download_file(final: Final) -> object:
+def download_file(final: Final):
     return FileResponse(path=("../final/" + final.neuralnetwork_file_name + ".keras"))
 
 

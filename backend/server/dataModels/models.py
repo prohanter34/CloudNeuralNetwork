@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 
 class User(BaseModel):
@@ -10,9 +11,9 @@ class Data(BaseModel):
     opt_fn: str  # "adam"
     loss_fn: str  # "categorical_crossentropy"
 
-    neuron_count: list[int] # [128, 200, 27]
+    neuron_count: List[int] # [128, 200, 27]
     hidden_layer_count: int  # 3
-    act_fn: list[str]  # ['relu', 'relu', 'softmax']
+    act_fn: List[str]  # ['relu', 'relu', 'softmax']
 
     dataset_filename: str # имя файла с расширением
     depth_input_data: int # 255
