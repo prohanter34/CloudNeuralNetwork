@@ -39,14 +39,13 @@ def registration(user: User):
 @app.post("/auth/login")
 def login(user: User):
     results = database.take_user(user.login)
-
     response = {
-        "resultCode": 1,
+        "resultCode": 2,
         "email": "",
         "login": ""
     }
 
-    if results[0] == "1":
+    if results == []:
         return response
     elif results[0][2] == user.password:
         response = {
@@ -56,14 +55,13 @@ def login(user: User):
         }
         return response
     else:
-        response["resultCode"] = 2
         return response
 
 @app.post("/dataset")
 def user_data(dataset: UploadFile):
     contents = dataset.file.read()
     file_name = "".join(str(uuid.uuid4()).split("-")) + dataset.filename
-    file_path = "../datasets/" + file_name
+    file_path = "./datasets/" + file_name
     with open(file_path, "wb") as f:
         f.write(contents)
     dataset.file.close()
@@ -78,7 +76,7 @@ def user_data(data: Data):
     structure = Structure(neuron_count=data.neuron_count,
                           hidden_layer_count=data.hidden_layer_count,
                           act_fn=data.act_fn)
-    file_path = "../datasets/" + data.dataset_filename
+    file_path = "./datasets/" + data.dataset_filename
     file = open(file_path, "r")
     dataset_model = Dataset(learning_data=file,
                             input_type=data.dataset_filename.split(".")[-1],
@@ -95,15 +93,33 @@ def user_data(data: Data):
     model = neuralnetwork.create_model()
     model = neuralnetwork.train_model(model)
     neuralnetwork_file_name = "".join(str(uuid.uuid4()).split("-"))
-    neuralnetwork_file_path = "../final/" + neuralnetwork_file_name + ".keras"
+    neuralnetwork_file_path = "./final/" + neuralnetwork_file_name + ".keras"
     neuralnetwork.save_model(model, neuralnetwork_file_path)
+
+    results = database.put_network(data.name, neuralnetwork_file_name, data.login)
+    resultCode = results[0][0]
 
     response = {"neuralnetwork_file_name": neuralnetwork_file_name}
     return response
 
 @app.post("/final")
 def download_file(final: Final):
-    return FileResponse(path=("../final/" + final.neuralnetwork_file_name + ".keras"))
+    return FileResponse(path=("./final/" + final.neuralnetwork_file_name + ".keras"))
+
+@app.get("/networks/{login}")
+def get_user_networks(login: str):
+    results = database.take_users_networks(login)
+    print(results)
+    response = []
+    for i in results:
+        network = {
+            "id" : i[0],
+            "name" : i[1],
+            "path" : i[3]
+        }
+        response.append(network)
+    return response
+
 
 
 origins = [

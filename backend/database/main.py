@@ -30,3 +30,17 @@ class Database:
         except:
             return list("1")
 
+    def take_users_networks(self, login):
+        try:
+            self.cursor.execute(f"SELECT * FROM networks where login='{login}';")
+            return list(self.cursor.fetchall())
+        except:
+            return list("1")
+
+    def put_network(self, name, path, login):
+        try:
+            self.cursor.execute(f"INSERT INTO networks(name, path, login) VALUES ('{name}', '{path}', '{login}');")
+            self.conn.commit()
+            return list("0")
+        except:
+            return list("1")

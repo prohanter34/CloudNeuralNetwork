@@ -8,6 +8,9 @@ class User(BaseModel):
     email: str = None
 
 class Data(BaseModel):
+    login: str
+    name: str
+
     opt_fn: str  # "adam"
     loss_fn: str  # "categorical_crossentropy"
 
