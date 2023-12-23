@@ -37,10 +37,32 @@ class Database:
         except:
             return list("1")
 
-    def put_network(self, name, path, login):
+    def put_network(self, name, path, login, optimization, lossfn, activations_arr, neuroncount_arr):
+        activations = ""
+        for i in activations_arr:
+            activations += '"' + i + '"'
+            activations += " ,"
+        activations = activations[:-2]
+
+        neuroncount = ""
+        for i in neuroncount_arr:
+            neuroncount += str(i)
+            neuroncount += " ,"
+        neuroncount = neuroncount[:-2]
+
         try:
-            self.cursor.execute(f"INSERT INTO networks(name, path, login) VALUES ('{name}', '{path}', '{login}');")
+            self.cursor.execute(f"INSERT INTO networks(name, path, login, optimization, " +
+                                f"lossfn, activations, neuroncount) " +
+                                f"VALUES ('{name}', '{path}', '{login}', " +
+                                f"'{optimization}', '{lossfn}', " + "'{" + activations + "}'" + ",'{" + neuroncount + "}');")
             self.conn.commit()
             return list("0")
         except:
-            return list("1")
+           return list("1")
+
+    def take_network_params(self, id):
+        try:
+            self.cursor.execute(f"SELECT * FROM networks WHERE id='{id}'")
+            return list(self.cursor.fetchall())
+        except:
+            return list('1')

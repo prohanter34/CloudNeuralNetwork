@@ -96,8 +96,10 @@ def user_data(data: Data):
     neuralnetwork_file_path = "./final/" + neuralnetwork_file_name + ".keras"
     neuralnetwork.save_model(model, neuralnetwork_file_path)
 
-    results = database.put_network(data.name, neuralnetwork_file_name, data.login)
+    results = database.put_network(data.name, neuralnetwork_file_name, data.login,
+                                   data.opt_fn, data.loss_fn, data.act_fn, data.neuron_count)
     resultCode = results[0][0]
+    print(resultCode)
 
     response = {"neuralnetwork_file_name": neuralnetwork_file_name}
     return response
@@ -120,6 +122,22 @@ def get_user_networks(login: str):
         response.append(network)
     return response
 
+
+@app.get("/networksParams/{id}")
+def get_networks_params(id: int):
+    results = database.take_network_params(id)
+    if len(results) != 0:
+        response = {}
+        for i in results:
+            response["optimization"] = i[4]
+            response["lossFn"] = i[5]
+            response["activations"] = i[6]
+            response["neuronCounts"] = i[7]
+        return response
+    else:
+        return {
+            "resultCode" : 1
+        }
 
 
 origins = [
